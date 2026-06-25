@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later</license>
 	<authorEmail></authorEmail>
 	<authorUrl></authorUrl>
-	<version>1.0.2</version>
+	<version>1.0.4</version>
 	<description>Formulario visual para candidaturas y envio de CV.</description>
 	<files>
 		<filename module="mod_formulario_cv">mod_formulario_cv.php</filename>
