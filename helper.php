@@ -759,7 +759,7 @@ class ModFormularioCvHelper
 			$codigo = 1;
 		}
 
-		$clave = sprintf('M%08d', $codigo);
+		$clave = self::generarClaveUnica(8);
 		$localidad = trim((string) $input->getString('cv_localidad', ''));
 
 		$disponibilidad = trim((string) $input->getString('cv_disponibilidad', ''));
