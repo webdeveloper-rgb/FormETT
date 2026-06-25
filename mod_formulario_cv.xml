@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="3.10" client="site" method="upgrade">
 	<name>Formulario CV</name>
-	<author>Codex</author>
+	<author>Sauber Ofimática</author>
 	<creationDate>2026-06-12</creationDate>
 	<copyright>Copyright (C) 2026</copyright>
 	<license>GNU General Public License version 2 or later</license>
@@ -16,6 +16,11 @@
 		<folder>media</folder>
 		<folder>language</folder>
 	</files>
+	<updateservers>
+		<server type="collection" priority="1" name="FormETT Updates">
+			https://raw.githubusercontent.com/webdeveloper-rgb/FormETT/main/update.xml
+		</server>
+	</updateservers>
 	<config>
 		<fields name="params" addfieldpath="administrator/components/com_jce/models/fields">
 			<fieldset name="basic">
