@@ -8,26 +8,32 @@ on:
 jobs:
   update-xml:
     runs-on: ubuntu-latest
+    # IMPORTANTE: Esto otorga los permisos necesarios para escribir en el repo
+    permissions:
+      contents: write 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          ref: main  # FUERZA el checkout en la rama main
-          token: ${{ secrets.GITHUB_TOKEN }} # NECESARIO para permisos de escritura
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update version in XML
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           
-          # Actualizar mod_formulario_cv.xml
+          # Actualizar el nombre correcto del archivo manifest.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" manifest.xml
           
-          # Actualizar update.xml también (si lo tienes)
+          # Actualizar update.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
           
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add mod_formulario_cv.xml update.xml
+          
+          # Añadir los archivos correctos (usando manifest.xml en lugar de mod_...)
+          git add manifest.xml update.xml
+          
           git commit -m "Actualización automática de versión a $VERSION"
           
           # Empujar cambios a la rama main
