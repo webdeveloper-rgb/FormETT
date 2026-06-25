@@ -8,7 +8,6 @@ on:
 jobs:
   update-xml:
     runs-on: ubuntu-latest
-    # IMPORTANTE: Esto otorga los permisos necesarios para escribir en el repo
     permissions:
       contents: write 
     steps:
@@ -18,12 +17,15 @@ jobs:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update version in XML
+      - name: Update versions in XML files
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           
-          # Actualizar el nombre correcto del archivo manifest.xml
+          # Actualizar manifest.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" manifest.xml
+          
+          # Actualizar mod_formulario_cv.xml
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
           
           # Actualizar update.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
@@ -31,8 +33,8 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           
-          # Añadir los archivos correctos (usando manifest.xml en lugar de mod_...)
-          git add manifest.xml update.xml
+          # Añadir los tres archivos al commit
+          git add manifest.xml mod_formulario_cv.xml update.xml
           
           git commit -m "Actualización automática de versión a $VERSION"
           
