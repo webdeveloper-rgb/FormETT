@@ -5,7 +5,7 @@
         <description>Actualización del módulo Formulario CV</description>
         <element>manifest</element>
         <type>module</type>
-        <version>1.0.6</version> <!-- Debe coincidir con la versión del manifiesto -->
+        <version>.1.0.7</version> <!-- Debe coincidir con la versión del manifiesto -->
         <downloads>
             <!-- Asegúrate de crear un release en GitHub para obtener este enlace -->
             <downloadurl type="full" format="zip">
