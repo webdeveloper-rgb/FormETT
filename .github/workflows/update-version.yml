@@ -1,0 +1,29 @@
+name: Update Version XML
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  update-xml:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Update version in XML
+        run: |
+          # Obtiene la versión desde el tag (ej: v1.0.3 -> 1.0.3)
+          VERSION=${GITHUB_REF_NAME#v}
+          
+          # Sustituye la versión en el XML usando sed
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
+          
+          # Configura git para hacer commit del cambio
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add mod_formulario_cv.xml
+          git commit -m "Actualización automática de versión a $VERSION"
+          git push
