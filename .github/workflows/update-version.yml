@@ -9,21 +9,26 @@ jobs:
   update-xml:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0
+          ref: main  # FUERZA el checkout en la rama main
+          token: ${{ secrets.GITHUB_TOKEN }} # NECESARIO para permisos de escritura
 
       - name: Update version in XML
         run: |
-          # Obtiene la versión desde el tag (ej: v1.0.3 -> 1.0.3)
           VERSION=${GITHUB_REF_NAME#v}
           
-          # Sustituye la versión en el XML usando sed
+          # Actualizar mod_formulario_cv.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
           
-          # Configura git para hacer commit del cambio
+          # Actualizar update.xml también (si lo tienes)
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
+          
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add mod_formulario_cv.xml
+          git add mod_formulario_cv.xml update.xml
           git commit -m "Actualización automática de versión a $VERSION"
-          git push
+          
+          # Empujar cambios a la rama main
+          git push origin main
