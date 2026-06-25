@@ -20,7 +20,7 @@ jobs:
           VERSION=${GITHUB_REF_NAME#v}
           
           # Actualizar mod_formulario_cv.xml
-          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" manifest.xml
           
           # Actualizar update.xml también (si lo tienes)
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
