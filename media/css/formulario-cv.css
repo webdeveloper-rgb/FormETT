@@ -1,0 +1,505 @@
+/* ==========================================================================
+   MOD FORMULARIO CV â€” CSS COMPLETO
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. RESET Y ESTILOS BASE
+   ========================================================================== */
+.cv-form-shell {
+	background: var(--cv-bg);
+	border: 1px solid var(--cv-line);
+	border-radius: 8px;
+	margin: 0 auto;
+	max-width: 980px;
+	padding: 28px;
+	box-sizing: border-box;
+}
+
+.cv-form-header {
+	border-bottom: 1px solid var(--cv-line);
+	margin-bottom: 24px;
+	padding-bottom: 20px;
+}
+
+.cv-form-kicker {
+	color: var(--cv-accent);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0;
+	margin: 0 0 6px;
+	text-transform: uppercase;
+}
+
+.cv-form-header h2 {
+	color: var(--cv-text);
+	font-size: 30px;
+	font-weight: 700;
+	line-height: 1.2;
+	margin: 0;
+}
+
+.cv-form-intro {
+	color: var(--cv-muted);
+	font-size: 16px;
+	line-height: 1.55;
+	margin: 10px 0 0;
+	max-width: 720px;
+}
+
+.cv-form {
+	margin: 0;
+}
+
+.cv-form-message {
+	border: 1px solid var(--cv-line);
+	border-radius: 8px;
+	margin: 0 0 18px;
+	padding: 14px 16px;
+	font-size: 14px;
+	font-weight: 600;
+	line-height: 1.45;
+}
+
+.cv-form-message-success {
+	background: #edf3f8;
+	border-color: #bcd2e5;
+	color: #0b1a30;
+}
+
+.cv-form-message-error {
+	background: #fdf1ec;
+	border-color: #f1c2b0;
+	color: #a04214;
+}
+
+.cv-form-message-info {
+	background: #f5f8fb;
+	border-color: #d8e4ef;
+	color: #35516b;
+}
+
+.cv-form-section {
+	background: var(--cv-panel);
+	border: 1px solid var(--cv-line);
+	border-radius: 8px;
+	margin: 0 0 18px;
+	padding: 22px;
+}
+
+.cv-form-section legend {
+	border: 0;
+	color: var(--cv-text);
+	display: block;
+	font-size: 18px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin: 0 0 18px;
+	padding: 0;
+	width: auto;
+}
+
+.cv-form-grid {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.cv-form-grid-files {
+	margin-top: 18px;
+}
+
+.cv-field {
+	min-width: 0;
+}
+
+.cv-field-wide {
+	grid-column: 1 / -1;
+}
+
+.cv-field label,
+.cv-field > label {
+	color: var(--cv-text);
+	display: block;
+	font-size: 14px;
+	font-weight: 700;
+	line-height: 1.35;
+	margin: 0 0 7px;
+}
+
+.cv-field label span,
+.cv-required {
+	color: var(--cv-text);
+}
+
+.cv-field input[type="text"],
+.cv-field input[type="email"],
+.cv-field input[type="tel"],
+.cv-field input[type="file"],
+.cv-field select,
+.cv-field textarea {
+	background: #ffffff;
+	border: 1px solid #c8d1db;
+	border-radius: 6px;
+	box-shadow: none;
+	box-sizing: border-box;
+	color: var(--cv-text);
+	font: inherit;
+	min-height: 44px;
+	padding: 10px 12px;
+	width: 100%;
+}
+
+.cv-field input[type="file"] {
+	cursor: pointer;
+	padding: 9px 10px;
+}
+
+.cv-field textarea {
+	line-height: 1.45;
+	min-height: 104px;
+	resize: vertical;
+}
+
+.cv-field input:focus,
+.cv-field select:focus,
+.cv-field textarea:focus {
+	border-color: var(--cv-accent);
+	box-shadow: 0 0 0 3px rgba(201, 147, 27, 0.18);
+	outline: 0;
+}
+
+.cv-field-help,
+.cv-form-actions p {
+	color: var(--cv-muted);
+	font-size: 13px;
+	line-height: 1.45;
+	margin: 6px 0 0;
+}
+
+.cv-checkbox-list {
+	display: grid;
+	gap: 10px;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cv-choice {
+	align-items: center;
+	background: #fbfcfc;
+	border: 1px solid var(--cv-line);
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex !important;
+	font-weight: 600 !important;
+	gap: 10px;
+	margin: 0 !important;
+	min-height: 44px;
+	padding: 10px 12px;
+	transition: border-color 0.16s ease, background-color 0.16s ease;
+}
+
+.cv-choice:hover {
+	background: var(--cv-accent-soft);
+	border-color: rgba(201, 147, 27, 0.35);
+}
+
+.cv-choice input {
+	flex: 0 0 auto;
+	margin: 0;
+}
+
+.cv-choice input:checked + span {
+	color: var(--cv-accent-dark);
+}
+
+.cv-limit-message {
+	color: var(--cv-warning);
+	font-size: 13px;
+	font-weight: 700;
+	line-height: 1.4;
+	margin: 10px 0 0;
+	min-height: 18px;
+}
+
+.cv-privacy {
+	background: #ffffff;
+	border: 1px solid var(--cv-line);
+	border-radius: 8px;
+	margin-bottom: 18px;
+	padding: 16px 18px;
+}
+
+.cv-privacy label {
+	align-items: flex-start;
+	color: var(--cv-text);
+	display: flex;
+	font-size: 14px;
+	font-weight: 600;
+	gap: 10px;
+	line-height: 1.45;
+	margin: 0;
+}
+
+.cv-privacy input {
+	flex: 0 0 auto;
+	margin: 3px 0 0;
+}
+
+.cv-privacy a {
+	color: var(--cv-accent-dark);
+	text-decoration: underline;
+}
+
+.cv-form-actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	justify-content: space-between;
+}
+
+.cv-policy-read-button {
+	appearance: none;
+	background: var(--cv-accent);
+	border: 1px solid var(--cv-accent);
+	border-radius: 8px;
+	color: #ffffff;
+	cursor: pointer;
+	display: inline-block;
+	font-weight: 700;
+	padding: 12px 18px;
+	text-decoration: none;
+	transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.cv-policy-read-button:hover {
+	background: var(--cv-accent-dark);
+	border-color: var(--cv-accent-dark);
+}
+
+.cv-policy-modal-overlay {
+	align-items: center;
+	background: rgba(11, 26, 48, 0.75);
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	left: 0;
+	padding: 16px;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 100000;
+}
+
+.cv-policy-modal-content {
+	background: #ffffff;
+	border-radius: 12px;
+	box-shadow: 0 24px 60px rgba(11, 26, 48, 0.35);
+	height: min(90vh, 780px);
+	max-width: 92vw;
+	overflow: hidden;
+	width: 100%;
+}
+
+.cv-policy-modal-header {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+	padding: 18px 20px;
+	border-bottom: 1px solid #e4e9f0;
+}
+
+.cv-policy-modal-close {
+	appearance: none;
+	background: transparent;
+	border: 1px solid #c8d1db;
+	border-radius: 8px;
+	color: var(--cv-text);
+	cursor: pointer;
+	font-weight: 700;
+	padding: 10px 16px;
+}
+
+.cv-policy-modal-frame {
+	border: 0;
+	height: calc(100% - 70px);
+	width: 100%;
+}
+
+.cv-submit {
+	background: var(--cv-accent) !important;
+	border: 1px solid var(--cv-accent) !important;
+	border-radius: 6px;
+	box-shadow: none;
+	color: #ffffff;
+	cursor: pointer;
+	font: inherit;
+	font-weight: 700;
+	line-height: 1.2;
+	min-height: 46px;
+	padding: 12px 22px;
+	text-align: center;
+	transition: background-color 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.cv-submit:hover,
+.cv-submit:focus {
+	background: var(--cv-accent-dark) !important;
+	border-color: var(--cv-accent-dark) !important;
+	color: #ffffff;
+	outline: 0;
+	transform: translateY(-1px);
+}
+
+
+/* ==========================================================================
+   2. CENTRADO EN PÃGINA â€” Neutraliza Bootstrap container y centra el shell
+   ========================================================================== */
+.cv-form-module {
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+/* Neutraliza el container de Bootstrap para que no limite el centrado */
+.cv-form-module > .container {
+	max-width: 100% !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	width: 100% !important;
+}
+
+/* Neutraliza la row de Bootstrap */
+.cv-form-module > .container > .row {
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+}
+
+/* Neutraliza la columna de Bootstrap */
+.cv-form-module > .container > .row > [class*="col-"] {
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	max-width: 100% !important;
+	flex: 0 0 100% !important;
+	width: 100% !important;
+}
+
+/* El shell se centra solo gracias a margin: 0 auto y max-width */
+#section11 .cv-form-shell {
+	max-width: 980px !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
+	padding-left: 28px !important;
+	padding-right: 28px !important;
+}
+
+
+/* ==========================================================================
+   3. RESPONSIVE â€” MÃ³vil (â‰¤760px)
+   ========================================================================== */
+@media (max-width: 760px) {
+	.cv-form-shell {
+		padding: 16px;
+	}
+
+	.cv-form-header h2 {
+		font-size: 24px;
+	}
+
+	.cv-form-section {
+		padding: 16px;
+	}
+
+	.cv-form-grid,
+	.cv-checkbox-list {
+		grid-template-columns: 1fr;
+	}
+
+	.cv-form-section legend {
+		font-size: 17px;
+	}
+
+	.cv-field input[type="text"],
+	.cv-field input[type="email"],
+	.cv-field input[type="tel"],
+	.cv-field input[type="file"],
+	.cv-field select,
+	.cv-field textarea {
+		font-size: 16px;
+	}
+
+	.cv-privacy {
+		padding: 14px 16px;
+	}
+
+	.cv-privacy label {
+		gap: 8px;
+	}
+
+	.cv-form-actions {
+		align-items: stretch;
+		display: block;
+		gap: 10px;
+	}
+
+	.cv-submit {
+		min-height: 48px;
+		width: 100%;
+	}
+}
+
+
+/* ==========================================================================
+   4. RESPONSIVE â€” MÃ³vil pequeÃ±o (â‰¤420px)
+   ========================================================================== */
+@media (max-width: 420px) {
+	.cv-form-module {
+		margin-left: -4px;
+		margin-right: -4px;
+	}
+
+	.cv-form-shell {
+		border-radius: 0;
+		border-left: 0;
+		border-right: 0;
+		padding: 14px 12px;
+	}
+
+	.cv-form-section {
+		padding: 14px 12px;
+	}
+
+	.cv-form-header {
+		margin-bottom: 18px;
+		padding-bottom: 16px;
+	}
+
+	.cv-form-header h2 {
+		font-size: 22px;
+	}
+}
+
+
+/* ==========================================================================
+   5. RESPONSIVE â€” Inputs a ancho completo en mÃ³vil (â‰¤767px)
+   ========================================================================== */
+@media (max-width: 767px) {
+	.cv-form-module input:not([type="checkbox"]):not([type="radio"]),
+	.cv-form-module textarea,
+	.cv-form-module select {
+		width: 100% !important;
+		max-width: 100% !important;
+		box-sizing: border-box !important;
+	}
+
+	.cv-form-module .cv-submit {
+		width: auto !important;
+		max-width: 100% !important;
+	}
+	.cv-checkbox-list {
+		display: grid;
+		gap: 10px;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}

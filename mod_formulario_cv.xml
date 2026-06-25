@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="3.10" client="site" method="upgrade">
+	<name>Formulario CV</name>
+	<author>Codex</author>
+	<creationDate>2026-06-12</creationDate>
+	<copyright>Copyright (C) 2026</copyright>
+	<license>GNU General Public License version 2 or later</license>
+	<authorEmail></authorEmail>
+	<authorUrl></authorUrl>
+	<version>1.0.2</version>
+	<description>Formulario visual para candidaturas y envio de CV.</description>
+	<files>
+		<filename module="mod_formulario_cv">mod_formulario_cv.php</filename>
+		<filename>index.html</filename>
+		<folder>tmpl</folder>
+		<folder>media</folder>
+		<folder>language</folder>
+	</files>
+	<config>
+		<fields name="params" addfieldpath="administrator/components/com_jce/models/fields">
+			<fieldset name="basic">
+				<field
+					name="privacy_url"
+					type="url"
+					label="URL de la politica de privacidad"
+					description="Enlace que se mostrara junto a la casilla de aceptacion."
+					default=""
+				/>
+				<field
+					name="intro_text"
+					type="textarea"
+					label="Texto introductorio"
+					description="Texto breve que aparece bajo el titulo del formulario."
+					rows="3"
+					default="Completa tus datos y adjunta tu CV para que podamos valorar tu candidatura."
+				/>
+				<field
+					name="max_job_options"
+					type="number"
+					label="Maximo de puestos seleccionables"
+					description="Numero maximo de puestos que podra marcar el usuario."
+					default="3"
+					min="1"
+					max="10"
+				/>
+				<field
+					name="availability_options"
+					type="textarea"
+					label="Opciones de disponibilidad"
+					description="Escribe una opcion por linea. Se mostraran en el desplegable de disponibilidad."
+					rows="5"
+					default="Inmediata&#10;En 15 dias&#10;En 30 dias&#10;A convenir"
+				/>
+				<field
+					name="pdf_plantilla"
+					type="mediajce"
+					label="PDF a firmar"
+					description="Selecciona el PDF de politicas/LOPD que el candidato debera leer y firmar. Subelo primero desde el gestor de medios de JCE."
+					browser="file"
+					hide_none="true"
+					extensions="pdf"
+					converted_path="1"
+					default=""
+				/>
+			</fieldset>
+		</fields>
+	</config>
+</extension>
