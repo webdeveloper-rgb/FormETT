@@ -4,6 +4,7 @@
         <name>Formulario CV</name>
         <description>Actualización del módulo Formulario CV</description>
         <element>manifest</element>
+        <element>mod_formulario_cv</element>
         <type>module</type>
         <version>1.0.8</version> <!-- Debe coincidir con la versión del manifiesto -->
         <downloads>
