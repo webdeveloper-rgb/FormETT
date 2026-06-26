@@ -16,7 +16,6 @@
 		<filename>pdf-calibrator.php</filename>
 		<filename>index.html</filename>
 		<filename>manifest.xml</filename>
-		<filename>config.ini</filename>
 		<folder>tmpl</folder>
 		<folder>media</folder>
 		<folder>language</folder>
