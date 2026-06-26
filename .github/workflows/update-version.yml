@@ -1,4 +1,4 @@
-name: Update Version XML
+name: Update Version XML and Release
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
   update-xml:
     runs-on: ubuntu-latest
     permissions:
-      contents: write 
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,22 +21,43 @@ jobs:
         run: |
           VERSION=${GITHUB_REF_NAME#v}
           
-          # Actualizar manifest.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" manifest.xml
-          
-          # Actualizar mod_formulario_cv.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
-          
-          # Actualizar update.xml
           sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
           
           git config user.name github-actions
           git config user.email github-actions@github.com
-          
-          # Añadir los tres archivos al commit
           git add manifest.xml mod_formulario_cv.xml update.xml
-          
           git commit -m "Actualización automática de versión a $VERSION"
-          
-          # Empujar cambios a la rama main
           git push origin main
+
+  build-and-release:
+    runs-on: ubuntu-latest
+    needs: update-xml
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Crear ZIP del módulo
+        run: |
+          zip -r mod_formulario_cv.zip \
+            mod_formulario_cv.php \
+            mod_formulario_cv.xml \
+            helper.php \
+            submit.php \
+            pdf-calibrator.php \
+            index.html \
+            tmpl/ \
+            media/ \
+            language/
+
+      - name: Publicar Release con el ZIP
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mod_formulario_cv.zip
+          tag_name: ${{ github.ref_name }}
