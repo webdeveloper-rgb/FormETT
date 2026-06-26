@@ -3,18 +3,31 @@
     <update>
         <name>Formulario CV</name>
         <description>Actualización del módulo Formulario CV</description>
-        <element>manifest</element>
         <element>mod_formulario_cv</element>
         <type>module</type>
-        <version>1.0.8</version> <!-- Debe coincidir con la versión del manifiesto -->
+        <client>site</client>
+        <version>1.0.8</version>
         <downloads>
-            <!-- Asegúrate de crear un release en GitHub para obtener este enlace -->
             <downloadurl type="full" format="zip">
                 https://github.com/webdeveloper-rgb/FormETT/releases/latest/download/mod_formulario_cv.zip
             </downloadurl>
         </downloads>
-        <tags>
-            <tag>stable</tag>
-        </tags>
+        <tags><tag>stable</tag></tags>
+        <targetplatform name="joomla" version="3\.[0-9]+"/>
+    </update>
+    <update>
+        <name>Formulario CV</name>
+        <description>Actualización del módulo Formulario CV</description>
+        <element>manifest</element>
+        <type>module</type>
+        <client>site</client>
+        <version>1.0.8</version>
+        <downloads>
+            <downloadurl type="full" format="zip">
+                https://github.com/webdeveloper-rgb/FormETT/releases/latest/download/mod_formulario_cv.zip
+            </downloadurl>
+        </downloads>
+        <tags><tag>stable</tag></tags>
+        <targetplatform name="joomla" version="3\.[0-9]+"/>
     </update>
 </updates>
