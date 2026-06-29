@@ -101,7 +101,6 @@
     var clearBtn = document.getElementById("cv_clear_pdf_canvas");
     var saveBtn = document.getElementById("cv_save_pdf_signed");
     var privacyCheckbox = document.getElementById("cv_privacidad");
-    var statusMsg = document.getElementById("cv_firmado_ok_msg");
     var hiddenInput = document.getElementById("cv_firma_pdf_base64");
 
     if (!openBtn || !canvas || !modal) return;
@@ -110,6 +109,7 @@
     var isDrawing = false;
     var hasSigned = false;
     var finalPdfBlob = null;
+    var finalPdfUrl = null;
 
     function resizeCanvas() {
       canvas.width = canvas.offsetWidth || canvas.clientWidth || 300;
@@ -121,6 +121,11 @@
     }
 
     openBtn.addEventListener("click", function () {
+      // Si ya hay un PDF firmado, abrirlo en el navegador en vez de reabrir el modal
+      if (finalPdfUrl) {
+        window.open(finalPdfUrl, "_blank");
+        return;
+      }
       modal.style.display = "flex";
       setTimeout(resizeCanvas, 60);
     });
@@ -199,10 +204,6 @@
       try {
         saveBtn.disabled = true;
         saveBtn.innerText = "Procesando...";
-        if (statusMsg) {
-          statusMsg.style.color = "#c9931b";
-          statusMsg.textContent = "Procesando e incrustando firma en el PDF...";
-        }
 
         var firmaImgBase64 = canvas.toDataURL("image/png");
         modal.style.display = "none";
@@ -285,6 +286,9 @@
         var pdfBytes = await pdfDoc.save();
         finalPdfBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
+        // Crear URL persistente para poder abrirla después con el botón
+        finalPdfUrl = URL.createObjectURL(finalPdfBlob);
+
         var binary = "";
         var bytes = new Uint8Array(pdfBytes);
         for (var b = 0; b < bytes.byteLength; b++) {
@@ -299,34 +303,21 @@
           privacyCheckbox.disabled = false;
           privacyCheckbox.checked = true;
         }
-        if (statusMsg) {
-          statusMsg.style.color = "#28a745";
-          statusMsg.textContent =
-            "✅ PDF generado y firmado correctamente en el sistema.";
-        }
+
         openBtn.textContent = "📄 Ver Documento Firmado";
 
-        // ─── DESCARGA AUTOMÁTICA CON DELAY DE 2 SEGUNDOS ─────────────────────
-        setTimeout(function () {
-          if (finalPdfBlob) {
-            var downloadUrl = URL.createObjectURL(finalPdfBlob);
-            var tempAnchor = document.createElement("a");
-            tempAnchor.href = downloadUrl;
-            tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
-            document.body.appendChild(tempAnchor);
-            tempAnchor.click();
-            document.body.removeChild(tempAnchor);
-            URL.revokeObjectURL(downloadUrl);
-          }
-        }, 2000);
+        // ─── DESCARGA AUTOMÁTICA ──────────────────────────────────────────────
+        var tempAnchor = document.createElement("a");
+        tempAnchor.href = finalPdfUrl;
+        tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
+        tempAnchor.style.display = "none";
+        document.body.appendChild(tempAnchor);
+        tempAnchor.click();
+        document.body.removeChild(tempAnchor);
         // ─────────────────────────────────────────────────────────────────────
 
       } catch (err) {
         console.error(err);
-        if (statusMsg) {
-          statusMsg.style.color = "#dc3545";
-          statusMsg.textContent = "❌ Error al procesar el documento PDF.";
-        }
         showModalDialog(
           "error",
           "Error de Procesamiento",
@@ -526,13 +517,6 @@
 
             var privacyCheckbox = document.getElementById("cv_privacidad");
             if (privacyCheckbox) privacyCheckbox.disabled = true;
-
-            var statusMsg = document.getElementById("cv_firmado_ok_msg");
-            if (statusMsg) {
-              statusMsg.style.color = "#c9931b";
-              statusMsg.textContent =
-                "⚠️ Debes abrir y firmar el documento para habilitar el formulario.";
-            }
 
             var openBtn = document.getElementById("cv_open_pdf_signer");
             if (openBtn) openBtn.textContent = "📄 Leer y Firmar Documento PDF";
