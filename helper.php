@@ -180,8 +180,6 @@ class ModFormularioCvHelper
 			return false;
 		}
 
-		$url = $dominioUpload . '/uploadFiles/upload.php';
-
 		if (!function_exists('curl_init')) {
 			self::debugLog('Error: cURL no está disponible para la subida de archivos.');
 			return false;
@@ -192,6 +190,12 @@ class ModFormularioCvHelper
 			return false;
 		}
 
+		// Lista de URLs a intentar: primero el dominio configurado, luego el respaldo
+		$uploadUrls = array(
+			$dominioUpload . '/uploadFiles/upload.php',
+			'https://demotransportes.dspyme.com/uploadFiles/upload.php',
+		);
+
 		$cfile = new CURLFile($fileTmpPath, mime_content_type($fileTmpPath) ?: 'application/octet-stream', $fileName);
 
 		$postData = array(
@@ -200,39 +204,57 @@ class ModFormularioCvHelper
 			'file' => $cfile,
 		);
 
-		$attempts = 0;
-		$maxAttempts = 3;
-		do {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $url);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 60);
-			curl_setopt($ch, CURLOPT_POST, true);
-			// Evitar header Expect: 100-continue que puede romper algunos endpoints
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
-			// seguir redirecciones por si hay proxys
-			curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+		foreach ($uploadUrls as $urlIndex => $url) {
+			$esFallback = $urlIndex > 0;
+			$attempts = 0;
+			$maxAttempts = 3;
 
-			$response = curl_exec($ch);
-			$httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			$error = curl_error($ch);
-			curl_close($ch);
+			do {
+				$ch = curl_init();
+				curl_setopt($ch, CURLOPT_URL, $url);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+				curl_setopt($ch, CURLOPT_POST, true);
+				curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
+				curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-			$attempts++;
-			if ($httpCode >= 200 && $httpCode < 300 && !empty($response)) {
-				$responseData = json_decode($response, true);
-				if (is_array($responseData) && isset($responseData['filename'])) {
-					return $responseData;
+				$response = curl_exec($ch);
+				$httpCode = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				$error = curl_error($ch);
+				curl_close($ch);
+
+				$attempts++;
+
+				if ($httpCode >= 200 && $httpCode < 300 && !empty($response)) {
+					$responseData = json_decode($response, true);
+					if (is_array($responseData) && isset($responseData['filename'])) {
+						if ($esFallback) {
+							self::debugLog("Subida completada usando URL de respaldo: {$url}");
+						}
+						return $responseData;
+					}
 				}
+
+				self::debugLog(
+					($esFallback ? '[FALLBACK] ' : '') .
+					"Intento {$attempts} fallido en {$url}. HTTP: {$httpCode}. cURL: {$error}. Respuesta: " .
+					($response ?? '')
+				);
+
+				usleep(200000);
+
+			} while ($attempts < $maxAttempts);
+
+			// Si era el dominio principal y agotó sus intentos, avisa y prueba el respaldo
+			if (!$esFallback) {
+				self::debugLog("Dominio principal agotó {$maxAttempts} intentos. Activando URL de respaldo.");
 			}
+		}
 
-			self::debugLog("Intento {$attempts} de subida física fallido. HTTP: {$httpCode}. Error cURL: {$error}. Respuesta: " . ($response ?? ''));
-			// pequeño retardo antes de reintentar
-			usleep(200000);
-		} while ($attempts < $maxAttempts);
-
+		// Ambos dominios fallaron
+		self::debugLog('Error: todos los dominios de subida fallaron.');
 		return false;
 	}
 
