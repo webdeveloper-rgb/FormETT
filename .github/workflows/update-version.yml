@@ -20,14 +20,19 @@ jobs:
       - name: Update versions in XML files
         run: |
           VERSION=${GITHUB_REF_NAME#v}
-          
-          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" manifest.xml
-          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" mod_formulario_cv.xml
-          sed -i "s|<version>.*</version>|<version>$VERSION</version>|" update.xml
-          
+
+          # Actualizar <version> en manifiestos y XMLs de detalle
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|g" manifest.xml
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|g" mod_formulario_cv.xml
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|g" update_mod.xml
+          sed -i "s|<version>.*</version>|<version>$VERSION</version>|g" update_manifest.xml
+
+          # Actualizar atributo version= en update.xml (colector)
+          sed -i 's|version="[0-9]*\.[0-9]*\.[0-9]*"|version="'"$VERSION"'"|g' update.xml
+
           git config user.name github-actions
           git config user.email github-actions@github.com
-          git add manifest.xml mod_formulario_cv.xml update.xml
+          git add manifest.xml mod_formulario_cv.xml update.xml update_mod.xml update_manifest.xml
           git commit -m "Actualización automática de versión a $VERSION"
           git push origin main
 
@@ -45,9 +50,11 @@ jobs:
 
       - name: Crear ZIP del módulo
         run: |
+          sleep 5
           zip -r mod_formulario_cv.zip \
             mod_formulario_cv.php \
             mod_formulario_cv.xml \
+            manifest.xml \
             helper.php \
             submit.php \
             pdf-calibrator.php \
@@ -61,3 +68,4 @@ jobs:
         with:
           files: mod_formulario_cv.zip
           tag_name: ${{ github.ref_name }}
+          generate_release_notes: true
