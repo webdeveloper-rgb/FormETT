@@ -103,7 +103,6 @@
     var privacyCheckbox = document.getElementById("cv_privacidad");
     var statusMsg = document.getElementById("cv_firmado_ok_msg");
     var hiddenInput = document.getElementById("cv_firma_pdf_base64");
-    var downloadBtn = document.getElementById("cv_download_pdf_signed");
 
     if (!openBtn || !canvas || !modal) return;
 
@@ -306,19 +305,20 @@
             "✅ PDF generado y firmado correctamente en el sistema.";
         }
         openBtn.textContent = "📄 Ver Documento Firmado";
-        if (downloadBtn) {
-          downloadBtn.style.display = "inline-block";
-        }
 
-        // ─── DESCARGA AUTOMÁTICA TRAS GUARDAR ────────────────────────────────
-        var downloadUrl = URL.createObjectURL(finalPdfBlob);
-        var tempAnchor = document.createElement("a");
-        tempAnchor.href = downloadUrl;
-        tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
-        document.body.appendChild(tempAnchor);
-        tempAnchor.click();
-        document.body.removeChild(tempAnchor);
-        URL.revokeObjectURL(downloadUrl);
+        // ─── DESCARGA AUTOMÁTICA CON DELAY DE 2 SEGUNDOS ─────────────────────
+        setTimeout(function () {
+          if (finalPdfBlob) {
+            var downloadUrl = URL.createObjectURL(finalPdfBlob);
+            var tempAnchor = document.createElement("a");
+            tempAnchor.href = downloadUrl;
+            tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
+            document.body.appendChild(tempAnchor);
+            tempAnchor.click();
+            document.body.removeChild(tempAnchor);
+            URL.revokeObjectURL(downloadUrl);
+          }
+        }, 2000);
         // ─────────────────────────────────────────────────────────────────────
 
       } catch (err) {
@@ -337,27 +337,6 @@
         saveBtn.innerText = "Aceptar y Firmar PDF";
       }
     });
-
-    if (downloadBtn) {
-      downloadBtn.addEventListener("click", function () {
-        if (!finalPdfBlob) {
-          showModalDialog(
-            "error",
-            "Acción denegada",
-            "Primero debe firmar el documento para poder descargarlo.",
-          );
-          return;
-        }
-        var downloadUrl = URL.createObjectURL(finalPdfBlob);
-        var tempAnchor = document.createElement("a");
-        tempAnchor.href = downloadUrl;
-        tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
-        document.body.appendChild(tempAnchor);
-        tempAnchor.click();
-        document.body.removeChild(tempAnchor);
-        URL.revokeObjectURL(downloadUrl);
-      });
-    }
   }
 
   // ─── DIÁLOGO MODAL ─────────────────────────────────────────────────────────
@@ -557,9 +536,6 @@
 
             var openBtn = document.getElementById("cv_open_pdf_signer");
             if (openBtn) openBtn.textContent = "📄 Leer y Firmar Documento PDF";
-
-            var downloadBtn = document.getElementById("cv_download_pdf_signed");
-            if (downloadBtn) downloadBtn.style.display = "none";
 
             if (typeof grecaptcha !== "undefined") grecaptcha.reset();
             clearJobLimitDisabling(form);
