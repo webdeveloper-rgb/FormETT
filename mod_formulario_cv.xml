@@ -17,7 +17,7 @@
 		<folder>language</folder>
 	</files>
 	<updateservers>
-		<server type="collection" priority="1" name="FormETT Updates">
+		<server type="extension" priority="1" name="FormETT Updates">
 			https://raw.githubusercontent.com/webdeveloper-rgb/FormETT/main/update.xml
 		</server>
 	</updateservers>
