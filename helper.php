@@ -986,47 +986,128 @@ class ModFormularioCvHelper
 	 * Llamado desde submit.php cuando action=upload_pdf_firmado.
 	 */
 	public static function uploadPdfFirmado($clave, $pdfBase64)
-	{
-		$clave = trim((string) $clave);
-		if ($clave === '' || trim($pdfBase64) === '') {
-			return array('status' => 'error', 'message' => 'Datos incompletos.');
-		}
+{
+    $clave = trim((string) $clave);
+    if ($clave === '' || trim($pdfBase64) === '') {
+        return array('status' => 'error', 'message' => 'Datos incompletos.');
+    }
 
-		// Eliminar prefijo data URI si lo lleva
-		$clean = preg_replace('#^data:[^;]+;base64,#', '', trim($pdfBase64));
-		$bytes = base64_decode($clean, true);
+    $clean = preg_replace('#^data:[^;]+;base64,#', '', trim($pdfBase64));
+    $bytes = base64_decode($clean, true);
 
-		if ($bytes === false || strlen($bytes) < 100) {
-			self::debugLog('[uploadPdfFirmado] Base64 inválido para clave ' . $clave);
-			return array('status' => 'error', 'message' => 'PDF base64 inválido.');
-		}
+    if ($bytes === false || strlen($bytes) < 100) {
+        self::debugLog('[uploadPdfFirmado] Base64 inválido para clave ' . $clave);
+        return array('status' => 'error', 'message' => 'PDF base64 inválido.');
+    }
 
-		$nombre = 'LOPD_firmado_' . $clave . '.pdf';
-		$tmpPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $nombre;
+    $nombre  = 'LOPD_firmado_' . $clave . '.pdf';
+    $tmpPath = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $nombre;
 
-		if (@file_put_contents($tmpPath, $bytes) === false) {
-			self::debugLog('[uploadPdfFirmado] No se pudo escribir en /tmp para ' . $clave);
-			return array('status' => 'error', 'message' => 'Error al escribir archivo temporal.');
-		}
+    if (@file_put_contents($tmpPath, $bytes) === false) {
+        self::debugLog('[uploadPdfFirmado] No se pudo escribir en /tmp para ' . $clave);
+        return array('status' => 'error', 'message' => 'Error al escribir archivo temporal.');
+    }
 
-		$upload = self::uploadFileToDomain($tmpPath, $nombre);
-		@unlink($tmpPath);
+    $upload = self::uploadFileToDomain($tmpPath, $nombre);
+    @unlink($tmpPath);
 
-		if (empty($upload['filename'])) {
-			self::debugLog('[uploadPdfFirmado] Fallo de subida para ' . $clave);
-			return array('status' => 'error', 'message' => 'Error al subir el PDF firmado al dominio.');
-		}
+    if (empty($upload['filename'])) {
+        self::debugLog('[uploadPdfFirmado] Fallo de subida para ' . $clave);
+        return array('status' => 'error', 'message' => 'Error al subir el PDF firmado al dominio.');
+    }
 
-		// Registrar en Mediapath
-		$auth = self::authenticate();
-		$token = $auth['token'];
-		if ($token !== '') {
-			self::registerMediaInApi($clave, $upload['filename'], $nombre, $token, $nombre);
-		}
+    $auth  = self::authenticate();
+    $token = $auth['token'];
 
-		self::debugLog('[uploadPdfFirmado] OK — ' . $upload['filename'] . ' para ' . $clave);
-		return array('status' => 'success', 'message' => 'PDF firmado registrado correctamente.');
-	}
+    if ($token === '') {
+        self::debugLog('[uploadPdfFirmado] Sin token.');
+        return array('status' => 'error', 'message' => 'Error de autenticación con la API.');
+    }
+
+    // Registrar en Mediapath (igual que antes)
+    self::registerMediaInApi($clave, $upload['filename'], $nombre, $token, 'PDF LOPD firmado');
+
+    // -----------------------------------------------------------------
+    // PATCH: guardar solo el nombre del fichero en el candidato
+    // -----------------------------------------------------------------
+    $candidatoActualizado = false;
+    $endpointsCandidato   = self::getDynamicEndpoints('tabla_candidato');
+
+    foreach ($endpointsCandidato as $baseEndpoint) {
+
+        // Buscar el Id interno del candidato por su clave
+        $whereClause  = urlencode('(clave,eq,' . $clave . ')');
+        $searchUrl    = $baseEndpoint . '?where=' . $whereClause . '&limit=1';
+
+        $searchResult = self::execHttp($searchUrl, 'GET', array(
+            'xc-auth: ' . $token,
+            'Accept: application/json',
+        ));
+
+        $searchCode = isset($searchResult['http_code']) ? (int) $searchResult['http_code'] : 0;
+
+        if ($searchCode !== 200) {
+            continue;
+        }
+
+        $searchJson = json_decode((string) $searchResult['body'], true);
+        $rows       = array();
+
+        if (isset($searchJson['list']) && is_array($searchJson['list'])) {
+            $rows = $searchJson['list'];
+        } elseif (self::looksLikeRowList($searchJson)) {
+            $rows = $searchJson;
+        }
+
+        if (empty($rows)) {
+            self::debugLog('[uploadPdfFirmado] Candidato ' . $clave . ' no encontrado en ' . $baseEndpoint);
+            continue;
+        }
+
+        $row   = $rows[0];
+        $rowId = null;
+        foreach (array('Id', 'id', 'ID') as $idKey) {
+            if (isset($row[$idKey]) && is_numeric($row[$idKey])) {
+                $rowId = (int) $row[$idKey];
+                break;
+            }
+        }
+
+        if ($rowId === null) {
+            self::debugLog('[uploadPdfFirmado] Id interno no encontrado para clave ' . $clave);
+            continue;
+        }
+
+        $patchUrl     = $baseEndpoint . '/' . $rowId;
+        $patchPayload = json_encode(
+            array('pdf_firmado' => $upload['filename']),  // solo el nombre del fichero
+            JSON_UNESCAPED_UNICODE
+        );
+
+        $patchResult = self::execHttp($patchUrl, 'PATCH', array(
+            'xc-auth: ' . $token,
+            'Content-Type: application/json; charset=utf-8',
+            'Accept: application/json',
+        ), $patchPayload);
+
+        $patchCode = isset($patchResult['http_code']) ? (int) $patchResult['http_code'] : 0;
+
+        if ($patchCode === 200 || $patchCode === 201 || $patchCode === 204) {
+            $candidatoActualizado = true;
+            self::debugLog('[uploadPdfFirmado] pdf_firmado actualizado para clave ' . $clave . ' → ' . $upload['filename']);
+            break;
+        }
+
+        self::debugLog('[uploadPdfFirmado] Fallo PATCH en ' . $patchUrl . '. HTTP: ' . $patchCode . '. Respuesta: ' . ($patchResult['body'] ?? ''));
+    }
+
+    if (!$candidatoActualizado) {
+        self::debugLog('[uploadPdfFirmado] Advertencia: no se pudo actualizar pdf_firmado en NocoDB para clave ' . $clave);
+    }
+
+    self::debugLog('[uploadPdfFirmado] OK — ' . $upload['filename'] . ' para ' . $clave);
+    return array('status' => 'success', 'message' => 'PDF firmado registrado correctamente.');
+}
 
 	/**
 	 * Escribe o actualiza una clave en config.ini preservando comentarios.
