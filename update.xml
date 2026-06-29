@@ -13,7 +13,7 @@
             </downloadurl>
         </downloads>
         <tags><tag>stable</tag></tags>
-        <targetplatform name="joomla" version="3\.[0-9]+"/>
+        <targetplatform name="joomla" version="3.(8|10)"/>
     </update>
     <update>
         <name>Formulario CV</name>
