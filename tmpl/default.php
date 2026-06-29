@@ -269,9 +269,6 @@ window.cvPdfCoords = <?php echo json_encode([
                             ⚠️ Debes abrir y firmar el documento para habilitar el envío.
                         </p>
                         <input type="hidden" id="cv_firma_pdf_base64" name="cv_firma_pdf_base64" value="">
-                        <button type="button" id="cv_download_pdf_signed" class="btn btn-primary" style="display:none; margin-top:10px;">
-                            📥 Descargar PDF Firmado
-                        </button>
                     </fieldset>
                     <!-- ────────────────────────────────────────────────────── -->
 
