@@ -309,6 +309,18 @@
         if (downloadBtn) {
           downloadBtn.style.display = "inline-block";
         }
+
+        // ─── DESCARGA AUTOMÁTICA TRAS GUARDAR ────────────────────────────────
+        var downloadUrl = URL.createObjectURL(finalPdfBlob);
+        var tempAnchor = document.createElement("a");
+        tempAnchor.href = downloadUrl;
+        tempAnchor.download = "LOPD_Firmado_Candidato.pdf";
+        document.body.appendChild(tempAnchor);
+        tempAnchor.click();
+        document.body.removeChild(tempAnchor);
+        URL.revokeObjectURL(downloadUrl);
+        // ─────────────────────────────────────────────────────────────────────
+
       } catch (err) {
         console.error(err);
         if (statusMsg) {
@@ -454,12 +466,10 @@
       var submitButton = form.querySelector('button[type="submit"]');
       var originalLabel = submitButton ? submitButton.textContent : "";
 
-      // Capturar PDF ANTES de crear FormData (form.reset() lo borraría)
       var pdfB64 = hiddenInput ? hiddenInput.value : "";
       var formData = new FormData(form);
       var ajaxUrl = form.dataset.cvAjaxUrl || form.action;
 
-      // Quitar el PDF del FormData principal para no superar post_max_size
       formData.delete("cv_firma_pdf_base64");
 
       if (submitButton) {
@@ -499,7 +509,6 @@
             var boxes = form.parentNode.querySelectorAll(".cv-form-message");
             for (var i = 0; i < boxes.length; i++) boxes[i].remove();
 
-            // ── Petición secundaria: subir PDF firmado ──────────────────────
             var candidatoClave =
               result.data && result.data.clave ? result.data.clave : "";
             if (pdfB64 && candidatoClave) {
@@ -526,7 +535,6 @@
                   console.warn("[LOPD firmado] Error:", e);
                 });
             }
-            // ───────────────────────────────────────────────────────────────
 
             showModalDialog(
               "success",
